@@ -21,7 +21,7 @@ public class ProxyApp {
             final Path configFile = Paths.get(new File(resource.getFile()).getAbsolutePath());
             config = new Config(configFile);
             final List<String> parsingMessages = config.parseConfig();
-            if (config.isCorrectConfig()) {
+            if (!config.isCorrectConfig()) {
                 System.out.println("Incorrect config.properties file");
             }
             if (!parsingMessages.isEmpty()) {
@@ -46,12 +46,11 @@ public class ProxyApp {
             final ExecutorService executor = Executors.newFixedThreadPool(amountOfThreads);
 
             for (Config.ConfigEntity entity : config.configEntities()) {
-                System.out.println("Starting proxy on port " + entity.getLocalPort() + "...");
+                System.out.println(String.format("Starting proxy on port %s...",entity.getLocalPort()));
                 InetSocketAddress local = new InetSocketAddress(entity.getLocalPort());
                 InetSocketAddress remote = new InetSocketAddress(entity.getRemoteHost(), entity.getRemotePort());
                 Proxy proxy = new Proxy(local, remote);
                 executor.submit(proxy);
-
             }
         }
 
